@@ -38,18 +38,21 @@ private DsApiClient client;
 4、构造请求参数
 
    ```java
+   //默认模型为deepseek-chat
    ChatRequest chatRequest = new ChatRequest();
-   //填具体内容
-   chatRequest.setUserContent("请你实现快速排序的代码");
+   SendMessage sendMessage=new SendMessage();
+   //设置具体内容
+   sendMessage.setUserMessage("写快速排序代码,只给出代码");
    //指定身份
-   chatRequest.setSysTemContent("假如你是一位Java大神");
-   //选择AI模型
-   chatRequest.setModel(CommonConstant.DS_CHAT_MODEL);
+   sendMessage.setSystemMessage("假如你是一位java大神");
+   //调用
+   DeepseekChatCompletionResponse chatCompletion = dsApiClient.getChatCompletion(chatRequest,sendMessage);
    ```
 
 5、获取响应结果
 
 ```java
-DeepseekChatCompletionResponse chatCompletion = dsApiClient.getChatCompletion(chatRequest);    System.out.println(chatCompletion.getChoices().get(0).getMessage().getContent());
+DeepseekChatCompletionResponse chatCompletion = dsApiClient.getChatCompletion(chatRequest);
+System.out.println(chatCompletion.getChoices().get(0).getMessage().getContent());
 ```
 
