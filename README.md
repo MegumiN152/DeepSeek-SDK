@@ -19,7 +19,7 @@
 </dependency>
 ```
 2、 在DeepSeek官方平台获取相关的api-key
-![image-20240629130634938](C:\Users\ybb\AppData\Roaming\Typora\typora-user-images\image-20240629130634938.png)
+![image](https://github.com/MegumiN152/DeepSeek-SDK/assets/104641621/a5d8898d-cb11-4d1b-a49a-561ce8ff61dd)
 3、初始化DsApiClient对象
  通过配置注入对象
     修改配置：
