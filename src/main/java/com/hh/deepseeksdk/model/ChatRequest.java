@@ -1,43 +1,64 @@
 package com.hh.deepseeksdk.model;
 
+import com.hh.deepseeksdk.commtant.DsCommtant;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Data
 public class ChatRequest {
-    //系统消息内容 比如指定你是某某某
-    private String SysTemContent;
-    //用户消息内容 比如你要指定的消息内容 请帮我把xxxx翻译成xxxx
-    private String UserContent;
-    //模型 包括 deepseek-chat deepseek-coder
+    private List<Message> messages;
     private String model;
+    private double frequency_penalty;
+    private int max_tokens;
+    private double presence_penalty;
+    private Object stop;
+    private boolean stream;
+    private double temperature;
+    private double top_p;
+    private boolean logprobs;
+    private Integer top_logprobs;
+     // 静态方法，用于创建一个包含默认值的 ChatRequest 实例
+    public static ChatRequest createWithDefaults(ChatRequest chatRequest,SendMessage sendMessage) {
+        if (chatRequest == null) {
+            chatRequest = new ChatRequest();
+        }
+        chatRequest.setModel(Optional.ofNullable(chatRequest.getModel()).orElse(DsCommtant.CHAT_MODEL));  // 或者 DsCommtant.CODE_MODEL
+        if (chatRequest.getFrequency_penalty()==0.0){
+            chatRequest.setFrequency_penalty(DsCommtant.FREQUENCY_PENALTY);
+        }
+       if (chatRequest.getMax_tokens()==0){
+           chatRequest.setMax_tokens(DsCommtant.MAX_TOKEN);
+       }
+        if (chatRequest.getPresence_penalty()==0.0){
+            chatRequest.setPresence_penalty(DsCommtant.PRESENCE_PENALTY);
+        }
+        if (chatRequest.getStop()==null){
+            chatRequest.setStop(DsCommtant.STOP);
+        }
+        if (chatRequest.getTemperature()==0.0){
+            chatRequest.setTemperature(DsCommtant.TEMPERATURE);
+        }
+       if (chatRequest.getTop_p()==0.0){
+           chatRequest.setTop_p(DsCommtant.TOP_P);
+       }
+       if (chatRequest.getTop_logprobs()==null){
+           chatRequest.setTop_logprobs(DsCommtant.TOP_LOGPROBS);
+       }
+        chatRequest.setMessages(new ArrayList<>());
 
-    public ChatRequest(String sysTemContent, String userContent, String model) {
-        SysTemContent = sysTemContent;
-        UserContent = userContent;
-        this.model = model;
-    }
+        Message systemMessage = new Message();
+        systemMessage.setRole(DsCommtant.SYSTEM_ROLE);
+        systemMessage.setContent(sendMessage.getSystemMessage());
+        chatRequest.getMessages().add(systemMessage);
 
-    public ChatRequest() {
-    }
-
-    public String getSysTemContent() {
-        return SysTemContent;
-    }
-
-    public void setSysTemContent(String sysTemContent) {
-        SysTemContent = sysTemContent;
-    }
-
-    public String getUserContent() {
-        return UserContent;
-    }
-
-    public void setUserContent(String userContent) {
-        UserContent = userContent;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
+        Message userMessage = new Message();
+        userMessage.setRole(DsCommtant.USER_ROLE);
+        userMessage.setContent(sendMessage.getUserMessage());
+        chatRequest.getMessages().add(userMessage);
+        return chatRequest;
     }
 }
+
