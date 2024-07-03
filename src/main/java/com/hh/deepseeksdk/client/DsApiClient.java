@@ -7,14 +7,18 @@ package com.hh.deepseeksdk.client;
  * 调用第三方接口客户端
  **/
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.hh.deepseeksdk.commtant.DsCommtant;
 import com.hh.deepseeksdk.model.ChatRequest;
 import com.hh.deepseeksdk.model.DeepseekChatCompletionResponse;
+import com.hh.deepseeksdk.model.SendMessage;
 import okhttp3.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static com.hh.deepseeksdk.commtant.DsCommtant.API_URL;
+
 public class DsApiClient {
-    private static final String API_URL = "https://api.deepseek.com/chat/completions";
     private String apiKey;
     private OkHttpClient client;
     private MediaType mediaType;
@@ -28,34 +32,15 @@ public class DsApiClient {
                 .build();
         this.mediaType = MediaType.parse("application/json");
     }
-    private String createJsonRequestBody(ChatRequest chatRequest) {
-        return "{\n" +
-                "  \"messages\": [\n" +
-                "    {\n" +
-                "      \"content\": \"" + chatRequest.getSysTemContent() + "\",\n" +
-                "      \"role\": \"system\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"content\": \""+chatRequest.getUserContent()+"\",\n" +
-                "      \"role\": \"user\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"model\": \"" + chatRequest.getModel() + "\",\n" +
-                "  \"frequency_penalty\": 0,\n" +
-                "  \"max_tokens\": 2048,\n" +
-                "  \"presence_penalty\": 0,\n" +
-                "  \"stop\": null,\n" +
-                "  \"stream\": false,\n" +
-                "  \"temperature\": 1,\n" +
-                "  \"top_p\": 1,\n" +
-                "  \"logprobs\": false,\n" +
-                "  \"top_logprobs\": null\n" +
-                "}";
+    public String createJsonRequestBody(ChatRequest chatRequest,SendMessage sendMessage) {
+        ChatRequest defaults = ChatRequest.createWithDefaults(chatRequest,sendMessage);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(defaults);
     }
 
 
-    public DeepseekChatCompletionResponse getChatCompletion(ChatRequest chatRequest) throws IOException {
-        String jsonRequestBody = createJsonRequestBody(chatRequest);
+    public DeepseekChatCompletionResponse getChatCompletion(ChatRequest chatRequest, SendMessage sendMessage) throws IOException {
+        String jsonRequestBody = createJsonRequestBody(chatRequest,sendMessage);
         RequestBody body = RequestBody.create(mediaType, jsonRequestBody);
         Request request = new Request.Builder()
                 .url(API_URL)
